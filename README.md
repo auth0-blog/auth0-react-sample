@@ -88,7 +88,7 @@ Visit [`http://localhost:4040/`](http://localhost:4040/) to access the starter a
 Clone the `auth0-express-js-sample` repo:
 
 ```bash
-git clone git@github.com:auth0-blog/auth0-express-js-sample.git
+git clone -b add-rbac git@github.com:auth0-blog/auth0-express-js-sample.git
 ```
 
 Make the `auth0-express-js-sample` directory your current directory:

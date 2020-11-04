@@ -11,14 +11,11 @@ const Admin = () => {
     try {
       const token = await getAccessTokenSilently();
 
-      const response = await fetch(
-        `${serverUrl}/api/messages/protected-message`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${serverUrl}/api/messages/admin-message`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const responseData = await response.json();
 
