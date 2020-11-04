@@ -62,6 +62,7 @@ REACT_APP_AUTH0_DOMAIN=
 REACT_APP_AUTH0_CLIENT_ID=
 REACT_APP_AUTH0_AUDIENCE=https://express.sample
 REACT_APP_SERVER_URL=http://localhost:6060
+REACT_APP_ADMIN_ROLE=messages-admin
 ```
 
 The value of `REACT_APP_AUTH0_DOMAIN` is the "Domain" value from the "Settings".
@@ -126,47 +127,142 @@ With these values in place, hit the "Create" button.
 
 Now, click on the "Quick Start" tab of your Auth0 API page. This page presents instructions on how to set up different APIs. From the code box, choose "Node.js". Keep this page open as you'll be using the values next.
 
-Create a `.env` file for the API Server under the `auth0-express-sample` directory:
+Create a `.env` file for the API Server under the `auth0-express-js-sample` directory:
 
 ```bash
 touch .env
 ```
 
-Populate this `auth0-express-sample/.env` file as follows:
+Populate this `auth0-express-js-sample/.env` file as follows:
 
 ```bash
 SERVER_PORT=6060
 CLIENT_ORIGIN_URL=http://localhost:4040
 AUTH0_AUDIENCE=
-AUTH0_ISSUER_URL=
+AUTH0_DOMAIN=
 ```
 
-Head back to the "Node.js" code snippet from the Auth0 API "Quick Start" page. Locate the definition of `jwtCheck`:
+Head back to your Auth0 API page, and **follow these steps to get the Auth0 Audience**:
 
-```javascript
-var jwtCheck = jwt({
-  secret: jwks.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: "https://<TENANT-NAME>.auth0.com/.well-known/jwks.json",
-  }),
-  audience: "https://express.sample", // 👈 AUTH0_AUDIENCE value
-  issuer: "https://<TENANT-NAME>.auth0.com/", // 👈 AUTH0_ISSUER_URL value
-  algorithms: ["RS256"],
-});
-```
+![Get the Auth0 Audience to configure an API](https://cdn.auth0.com/blog/complete-guide-to-user-authentication/get-the-auth0-audience.png)
 
-Look at the object that the `jwt` function takes as an argument and use the following properties to complete the values of your `.env` file:
+1. Click on the ** "Settings"** tab.
 
-The `audience` property is the value of `AUTH0_AUDIENCE`.
+2. Locate the ** "Identifier"** field and copy its value.
 
-The `issuer` property is the value of `AUTH0_ISSUER_URL`.
+3. Paste the "Identifier" value as the value of `AUTH0_AUDIENCE` in `.env`.
 
-> Do not include the quotes, only the string value.
+Now, **follow these steps to get the Auth0 Domain value**:
+
+1. Click on the ** "Test"** tab.
+2. Locate the section called **" Asking Auth0 for tokens from my application"**.
+3. Click on the **cURL** tab to show a mock `POST` request.
+4. Copy your Auth0 domain, which is _part_ of the `--url` parameter value: `tenant-name.region.auth0.com`.
+5. Paste the Auth0 domain value as the value of `AUTH0_DOMAIN` in `.env`.
+
+> **Tips to get the Auth0 Domain**
+> - The Auth0 Domain is the substring between the protocol, `https://` and the path `/oauth/token`.
+> - The Auth0 Domain follows this pattern: `tenant-name.region.auth0.com`.
+> - The `region` subdomain (`au`, `us`, or `eu`) is optional. Some Auth0 Domains don't have it.
 
 With the `.env` configuration values set, run the API server by issuing the following command:
- 
+
 ```bash
 npm start
 ```
+
+## Create Permissions 
+
+Head to the ["APIs" section](https://manage.auth0.com/#/apis) of the Auth0 Dashboard.
+
+Select the API registration for which you want to create permissions.
+
+Once the API page loads up, click on the "Permissions" tab.
+
+Locate the **"Add a Permission (Scope)"** section and fill out the "Permission/Description" row as follows:
+
+- Permission (Scope): `read:admin-messages`
+- Description: Read admin messages
+
+Then, click on the "+ Add" button.
+
+Now, you need to enforce Role-Based Access Control (RBAC) policies for the API. 
+
+Click on the "Settings" tab of the API page.
+
+Scroll down to the "RBAC Settings" section and click on the "Enable RBAC" switch. The status of the switch should say "Enabled" with a green background color.
+
+Do the same to enable the "Add Permissions in the Access Token" option, which allows Auth0 to add the `permissions` claim to your access tokens.
+
+Scroll down and click the "Save" button.
+
+## Set Up User Roles with Auth0
+
+Head to the ["Roles" section](https://manage.auth0.com/#/roles) of the Auth0 Dashboard.
+
+Click on the "Create Role" button.
+
+Fill out the form that comes up as follows:
+
+- Name: `messages-admin`
+
+- Description: Access admin messaging features
+
+The page for the `messages-admin` role loads up.
+
+Click on the "Permissions" tab.
+
+Then, click on the "Add Permissions" button.
+ 
+Using the dropdown from the modal that comes up, choose the API for which you created the permission earlier.
+
+Next, select the `read:admin-messages` and click on the "Add Permissions" button.
+
+Now, you need to assign the `messages-admin` role to a user.
+
+Head to the ["Users" section](https://manage.auth0.com/#/users) of the Auth0 Dashboard.
+
+Click on any user to which you want to assign the role.
+
+Once the user's page loads up, click on the "Roles" tab.
+
+Then, click on the "Assign Roles" button.
+
+Choose the role that you created earlier and click on the "Assign" button.
+
+## Create an Auth0 Rule to Add Roles to Tokens
+
+Head to the ["Rules" section](https://manage.auth0.com/#/rules) of the Auth0 Dashboard.
+
+Click on the "Create Rule" button and then click on the "Empty Rule" option.
+
+In the form that comes up, set the **Name** field as "Token Roles".
+
+Then, copy and paste the following code as the value for the **Script** section:
+
+```javascript
+function(user, context, callback) {
+  const namespace = 'https://nestjs.example.com';
+
+  if (context.authorization && context.authorization.roles) {
+    const assignedRoles = context.authorization.roles;
+
+    if (context.idToken) {
+      const idTokenClaims = context.idToken;
+      idTokenClaims[`${namespace}/roles`] = assignedRoles;
+      context.idToken = idTokenClaims;
+    }
+
+    if (context.accessToken) {
+      const accessTokenClaims = context.accessToken;
+      accessTokenClaims[`${namespace}/roles`] = assignedRoles;
+      context.accessToken = accessTokenClaims;
+    }
+  }
+
+  callback(null, user, context);
+}
+```
+Finally, click the "Save Changes" button located at the bottom of the form.
+
+This rule will kick in whenever a user logs in, adding the existing user roles to the ID and access tokens.
