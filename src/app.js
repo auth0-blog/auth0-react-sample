@@ -7,7 +7,7 @@ import { Home, Profile, ExternalApi, Admin } from "./views";
 import ProtectedRoute from "./auth/protected-route";
 
 import "./app.css";
-import AdminRoute from "./auth/admin-route";
+import { RBACRoute } from "./auth/rbac-route";
 
 const App = () => {
   const { isLoading } = useAuth0();
@@ -24,7 +24,11 @@ const App = () => {
           <Route path="/" exact component={Home} />
           <ProtectedRoute path="/profile" component={Profile} />
           <ProtectedRoute path="/external-api" component={ExternalApi} />
-          <AdminRoute path="/admin" component={Admin} />
+          <RBACRoute
+            path="/admin"
+            component={Admin}
+            roles={["messages-admin"]}
+          />
         </Switch>
       </div>
       <Footer />
