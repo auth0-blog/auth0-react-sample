@@ -82,6 +82,8 @@ Visit [`http://localhost:4040/`](http://localhost:4040/) to access the starter a
 
 ## Set up the Demo API
 
+You can set up this Express demo server to test making secure API calls from your React application.
+
 ### Get the Express API demo
 
 Clone the `auth0-express-js-sample` repo:
@@ -124,49 +126,48 @@ https://express.sample
 
 With these values in place, hit the "Create" button.
 
-Now, click on the "Quick Start" tab of your Auth0 API page. This page presents instructions on how to set up different APIs. From the code box, choose "Node.js". Keep this page open as you'll be using the values next.
+Keep this page open as you'll be using the values next.
 
-Create a `.env` file for the API Server under the `auth0-express-sample` directory:
+Create a `.env` file for the API Server under the `auth0-express-js-sample` directory:
 
 ```bash
 touch .env
 ```
 
-Populate this `auth0-express-sample/.env` file as follows:
+Populate this `auth0-express-js-sample/.env` file as follows:
 
 ```bash
 SERVER_PORT=6060
 CLIENT_ORIGIN_URL=http://localhost:4040
 AUTH0_AUDIENCE=
-AUTH0_ISSUER_URL=
+AUTH0_DOMAIN=
 ```
 
-Head back to the "Node.js" code snippet from the Auth0 API "Quick Start" page. Locate the definition of `jwtCheck`:
+Head back to your Auth0 API page, and **follow these steps to get the Auth0 Audience**:
 
-```javascript
-var jwtCheck = jwt({
-  secret: jwks.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: "https://<TENANT-NAME>.auth0.com/.well-known/jwks.json",
-  }),
-  audience: "https://express.sample", // 👈 AUTH0_AUDIENCE value
-  issuer: "https://<TENANT-NAME>.auth0.com/", // 👈 AUTH0_ISSUER_URL value
-  algorithms: ["RS256"],
-});
-```
+![Get the Auth0 Audience to configure an API](https://cdn.auth0.com/blog/complete-guide-to-user-authentication/get-the-auth0-audience.png)
 
-Look at the object that the `jwt` function takes as an argument and use the following properties to complete the values of your `.env` file:
+1. Click on the **"Settings"** tab.
 
-The `audience` property is the value of `AUTH0_AUDIENCE`.
+2. Locate the **"Identifier"** field and copy its value.
 
-The `issuer` property is the value of `AUTH0_ISSUER_URL`.
+3. Paste the "Identifier" value as the value of `AUTH0_AUDIENCE` in `.env`.
 
-> Do not include the quotes, only the string value.
+Now, **follow these steps to get the Auth0 Domain value**:
+
+1. Click on the **"Test"** tab.
+2. Locate the section called **"Asking Auth0 for tokens from my application"**.
+3. Click on the **cURL** tab to show a mock `POST` request.
+4. Copy your Auth0 domain, which is _part_ of the `--url` parameter value: `tenant-name.region.auth0.com`.
+5. Paste the Auth0 domain value as the value of `AUTH0_DOMAIN` in `.env`.
+
+> **Tips to get the Auth0 Domain**
+> - The Auth0 Domain is the substring between the protocol, `https://` and the path `/oauth/token`.
+> - The Auth0 Domain follows this pattern: `tenant-name.region.auth0.com`.
+> - The `region` subdomain (`au`, `us`, or `eu`) is optional. Some Auth0 Domains don't have it.
 
 With the `.env` configuration values set, run the API server by issuing the following command:
- 
+
 ```bash
 npm start
 ```
