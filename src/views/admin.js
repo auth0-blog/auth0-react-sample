@@ -39,7 +39,7 @@ const Admin = () => {
       >
         <button
           type="button"
-          className="btn btn-primary"
+          className="btn btn-success"
           onClick={callSecureApi}
         >
           Get Admin Message

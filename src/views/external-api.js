@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { HasAccessRole } from "../auth/has-access-role";
 
 const ExternalApi = () => {
   const [message, setMessage] = useState("");
@@ -7,34 +8,46 @@ const ExternalApi = () => {
 
   const { getAccessTokenSilently } = useAuth0();
 
-  const callApi = async () => {
-    try {
-      const response = await fetch(`${serverUrl}/api/messages/public-message`);
+  const callApiHelper = async (config) => {
+    const { url, secure, options } = config;
 
-      const responseData = await response.json();
+    let fetchOptions = { ...options };
 
-      setMessage(responseData.message);
-    } catch (error) {
-      setMessage(error.message);
+    if (secure) {
+      const token = await getAccessTokenSilently();
+
+      fetchOptions = {
+        ...fetchOptions,
+        headers: {
+          ...fetchOptions.headers,
+          Authorization: `Bearer ${token}`,
+        },
+      };
+    }
+    const response = await fetch(url, fetchOptions);
+
+    const responseData = await response.json();
+
+    if (response.ok) {
+      return responseData;
+    }
+
+    if (!response.ok) {
+      return null;
     }
   };
 
-  const callSecureApi = async () => {
+  const callApi = async (config) => {
     try {
-      const token = await getAccessTokenSilently();
+      const response = await callApiHelper(config);
 
-      const response = await fetch(
-        `${serverUrl}/api/messages/protected-message`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      if (!response) {
+        setMessage(response);
+      }
 
-      const responseData = await response.json();
-
-      setMessage(responseData.message);
+      if (response.message) {
+        setMessage(response.message);
+      }
     } catch (error) {
       setMessage(error.message);
     }
@@ -53,16 +66,46 @@ const ExternalApi = () => {
         role="group"
         aria-label="External API Requests Examples"
       >
-        <button type="button" className="btn btn-primary" onClick={callApi}>
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() =>
+            callApi({
+              url: `${serverUrl}/api/messages/public-message`,
+            })
+          }
+        >
           Get Public Message
         </button>
         <button
           type="button"
           className="btn btn-primary"
-          onClick={callSecureApi}
+          onClick={() =>
+            callApi({
+              url: `${serverUrl}/api/messages/protected-message`,
+              secure: true,
+            })
+          }
         >
           Get Protected Message
         </button>
+        <HasAccessRole
+          requiredRoles={["messages-admin"]}
+          grantComponent={
+            <button
+              type="button"
+              className="btn btn-success"
+              onClick={() =>
+                callApi({
+                  url: `${serverUrl}/api/messages/admin-message`,
+                  secure: true,
+                })
+              }
+            >
+              Get Admin Message
+            </button>
+          }
+        />
       </div>
       {message && (
         <div className="mt-5">

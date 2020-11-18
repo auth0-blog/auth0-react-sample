@@ -1,10 +1,10 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 
-import { CanAccess } from "../auth/can-access";
+import { withRoleBasedRender } from "../auth/with-roles-based-render";
 
 const AdminNav = () => {
-  const Bar = () => (
+  return (
     <div className="navbar-nav">
       <NavLink
         to="/admin"
@@ -16,8 +16,8 @@ const AdminNav = () => {
       </NavLink>
     </div>
   );
-
-  return <CanAccess roles={["messages-admin"]} grantComponent={<Bar />} />;
 };
 
-export default AdminNav;
+export default withRoleBasedRender(AdminNav, {
+  requiredRoles: ["messages-admin"],
+});
