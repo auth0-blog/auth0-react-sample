@@ -1,5 +1,6 @@
-import Hero from "./hero";
+import InputBar from "./input-bar";
 import Loading from "./loading";
 import NavBar from "./nav-bar";
+import HomeContent from "./home-contect";
 
-export { Hero, Loading, NavBar };
+export { InputBar, Loading, NavBar, HomeContent };

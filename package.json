@@ -4,7 +4,9 @@
   "private": true,
   "dependencies": {
     "@auth0/auth0-react": "^1.1.0",
+    "bootstrap": "^4.6.0",
     "react": "^16.14.0",
+    "react-bootstrap": "^1.4.3",
     "react-dom": "^16.14.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.0"
