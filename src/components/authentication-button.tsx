@@ -5,7 +5,7 @@ import LogoutButton from "./logout-button";
 
 import { useAuth0 } from "@auth0/auth0-react";
 
-const AuthenticationButton = () => {
+const AuthenticationButton: React.FC = () => {
   const { isAuthenticated } = useAuth0();
 
   return isAuthenticated ? <LogoutButton /> : <LoginButton />;

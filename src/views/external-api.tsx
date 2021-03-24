@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 
-const ExternalApi = () => {
-  const [message, setMessage] = useState("");
+const ExternalApi: React.FC = () => {
+  const [message, setMessage] = useState<string>("");
   const serverUrl = process.env.REACT_APP_SERVER_URL;
 
   const { getAccessTokenSilently } = useAuth0();
@@ -39,6 +39,10 @@ const ExternalApi = () => {
       setMessage(error.message);
     }
   };
+
+  if (!serverUrl) {
+    return null;
+  }
 
   return (
     <div className="container">

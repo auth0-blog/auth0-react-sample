@@ -60,7 +60,7 @@ Populate `.env` as follows:
 ```bash
 REACT_APP_AUTH0_DOMAIN=
 REACT_APP_AUTH0_CLIENT_ID=
-REACT_APP_AUTH0_AUDIENCE=https://express.sample
+REACT_APP_AUTH0_AUDIENCE=https://api.example.com
 REACT_APP_SERVER_URL=http://localhost:6060
 ```
 
@@ -119,7 +119,7 @@ Auth0 Express Sample
 - Set its **Identifier** value:
 
 ```bash
-https://express.sample
+https://api.example.com
 ```
 
 - Leave the signing algorithm as `RS256` as it's the best option from a security standpoint.

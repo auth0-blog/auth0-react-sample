@@ -1,6 +1,6 @@
 import React from "react";
 
-const HomeContent = () => (
+const HomeContent: React.FC = () => (
   <div className="next-steps">
     <h2 className="my-5 text-center">What can I do next?</h2>
 
