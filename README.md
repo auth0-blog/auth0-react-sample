@@ -80,6 +80,136 @@ The application runs by on port `4040` to mitigate conflicting with other client
 
 Visit [`http://localhost:4040/`](http://localhost:4040/) to access the starter application.
 
+## Consumed Resources
+
+This React application consumes the following API resources in the "External API" view:
+
+### 🔓 Get all public messages
+
+```bash
+GET /api/messages/public
+```
+
+#### Response
+
+```bash
+Status: 200 OK
+```
+
+```json
+[
+  {
+    "id": 1,
+    "subject": "English",
+    "body": "This is a public message."
+  },
+  {
+    "id": 2,
+    "subject": "Español",
+    "body": "Este es un mensaje público."
+  },
+  {
+    "id": 3,
+    "subject": "Français",
+    "body": "Ceci est un message public."
+  }
+]
+```
+
+### 🔓 Get a public message
+
+```bash
+GET /api/messages/public/:id
+```
+
+`:id` corresponds to the message ID.
+
+#### Response
+
+##### If message is not found
+
+```bash
+Status: 404 Not Found
+```
+
+##### If message is found
+
+```bash
+Status: 200 OK
+```
+
+```json
+{
+  "id": 3,
+  "subject": "Français",
+  "body": "Ceci est un message public."
+}
+```
+
+> 🔐 Protected Endpoints: These endpoints require the request to include an access token issued by Auth0 in the authorization header.
+
+### 🔐 Get all private messages
+
+```bash
+GET /api/messages/private
+```
+
+#### Response
+
+```bash
+Status: 200 OK
+```
+
+```json
+[
+  {
+    "id": 1,
+    "subject": "English",
+    "body": "This is a private message."
+  },
+  {
+    "id": 2,
+    "subject": "Español",
+    "body": "Este es un mensaje privado."
+  },
+  {
+    "id": 3,
+    "subject": "Français",
+    "body": "Ceci est un message privé"
+  }
+]
+```
+
+### 🔐  Get a private message
+
+```bash
+GET /api/messages/private/:id
+```
+
+`:id` corresponds to the message ID.
+
+#### Response
+
+##### If message is not found
+
+```bash
+Status: 404 Not Found
+```
+
+##### If message is found
+
+```bash
+Status: 200 OK
+```
+
+```json
+{
+  "id": 2,
+  "subject": "Español",
+  "body": "Este es un mensaje privado."
+}
+```
+
 ## Set up the Demo API
 
 You can set up this Express demo server to test making secure API calls from your React application.
