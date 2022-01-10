@@ -7,15 +7,11 @@ import { Home, Profile, ExternalApi } from "./views";
 import ProtectedRoute from "./auth/protected-route";
 
 import "./app.css";
+import Auth0ProviderWithHistory from "./views/auth0Provider";
 
 const App = () => {
-  const { isLoading } = useAuth0();
-
-  if (isLoading) {
-    return <Loading />;
-  }
-
   return (
+    <Auth0ProviderWithHistory>
     <div id="app" className="d-flex flex-column h-100">
       <NavBar />
       <div className="container flex-grow-1">
@@ -27,7 +23,8 @@ const App = () => {
       </div>
       <Footer />
     </div>
+    </Auth0ProviderWithHistory>
   );
-};
+}; 
 
 export default App;
